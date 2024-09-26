@@ -3,6 +3,7 @@ from flask_gravatar import Gravatar
 import requests
 import jwt
 from functools import wraps
+import os
 import humanize
 from datetime import datetime, timezone, timedelta
 import pytz
@@ -50,7 +51,7 @@ def humanize_res(data):
         # Alternatively, you can use humanize to make it more natural, like "2 days ago"
         humanized_time = humanize.naturaltime(timestamp)
         prop['created_at'] = humanized_time
-        
+
     return data
 
 
@@ -1740,4 +1741,4 @@ def privacy_policy():
     return render_template("privacy_policy.html")
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=int(os.getenv("PORT", 5000))) 
