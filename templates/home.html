@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rently | Home</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <!-- <link rel="icon" href="/static/images"/ type="image/png"> -->
+    
+    <style>
+        body, .navbar-brand, .nav-link, .btn-logout, .hero, .search-bar, .card, .property-details, .property-features .feature, .bottom-nav .nav-link {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .navbar {
+            background-color: #33ccff;
+            border-radius: 25px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+        }
+
+        .active{
+            background-color: #33ccff;
+        }
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: white !important;
+        }
+
+        .btn-logout{
+            background-color: white;
+            color: #2cb5e8;
+            border-radius: 25px;
+            padding: 0.5rem 1rem;
+        }
+    
+        .btn-logout:hover {
+            color: white;
+            border-color: white;
+        }
+
+        .btn-login{
+            background-color: white;
+            color: #2cb5e8;
+            margin-right: 1rem;
+            border-radius: 25px;
+            padding: 0.5rem 1rem;
+        }
+    
+        .btn-login:hover {
+            color: white;
+            border-color: white;
+        }
+
+        .btn-signup {
+            border-radius: 25px;
+            color: white;
+            border-color: white;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-signup:hover {
+            background-color: white;
+            color: #33ccff;
+        }
+
+        .btn-primary {
+            background-color: #33ccff;
+            border-color: #33ccff;
+        }
+
+        .btn-primary:hover {
+            background-color: #2cb5e8;
+            border-color: #2cb5e8;
+        }
+
+        .nav-link {
+            color: white !important;
+        }
+
+
+        
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-left: 1rem;
+            margin-right: 1rem;
+        }
+    
+        .hero {
+            background-color: #f5f5f5;
+            padding: 4rem 0;
+        }
+        .hero {
+            background-color: #f0f0f0; /* Light grey background */
+            padding: 50px 0; /* Adjust padding as needed */
+            overflow: hidden; /* Ensure floating icons stay within the hero */
+            position: relative;
+        }
+        
+        .floating-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Prevent the icons from interfering with form interaction */
+            z-index: 1;
+        }
+        
+        .floating-icons i {
+            position: absolute;
+            color: #dcdcdc;
+            opacity: 0.6;
+            animation: float 15s infinite linear;
+        }
+        
+        .floating-icons i:nth-child(1) {
+            top: -20px;
+            left: 10%;
+            font-size: 24px;
+            animation-duration: 12s;
+            animation-delay: 0s;
+        }
+        
+        .floating-icons i:nth-child(2) {
+            top: -50px;
+            left: 30%;
+            font-size: 30px;
+            animation-duration: 15s;
+            animation-delay: 3s;
+        }
+        
+        .floating-icons i:nth-child(3) {
+            top: -80px;
+            left: 50%;
+            font-size: 20px;
+            animation-duration: 10s;
+            animation-delay: 2s;
+        }
+        
+        .floating-icons i:nth-child(4) {
+            top: -30px;
+            left: 70%;
+            font-size: 35px;
+            animation-duration: 14s;
+            animation-delay: 4s;
+        }
+        
+        .floating-icons i:nth-child(5) {
+            top: -40px;
+            left: 90%;
+            font-size: 28px;
+            animation-duration: 13s;
+            animation-delay: 1s;
+        }
+        
+        .floating-icons i:nth-child(6) {
+            top: -100px;
+            left: 20%;
+            font-size: 26px;
+            animation-duration: 11s;
+            animation-delay: 5s;
+        }
+        
+        .floating-icons i:nth-child(7) {
+            top: -60px;
+            left: 40%;
+            font-size: 32px;
+            animation-duration: 16s;
+            animation-delay: 6s;
+        }
+        
+        .floating-icons i:nth-child(8) {
+            top: -70px;
+            left: 60%;
+            font-size: 22px;
+            animation-duration: 9s;
+            animation-delay: 0s;
+        }
+        
+        .floating-icons i:nth-child(9) {
+            top: -90px;
+            left: 80%;
+            font-size: 34px;
+            animation-duration: 18s;
+            animation-delay: 7s;
+        }
+        
+        .floating-icons i:nth-child(10) {
+            top: -110px;
+            left: 95%;
+            font-size: 25px;
+            animation-duration: 17s;
+            animation-delay: 8s;
+        }
+
+        .profile-pic-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .profile-pic2 {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-pic-input {
+            display: none;
+        }
+
+        .profile-pic-label {
+            display: block;
+            position: relative;
+        }
+
+        .profile-pic-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            transition: opacity 0.3s;
+        }
+
+        .profile-pic-overlay i {
+            margin-right: 0.25rem;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination {
+            justify-content: center;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #33ccff;
+            border-color: #33ccff;
+            color: #fff; /* Optional: Adjust text color for contrast */
+        }
+
+        .pagination .page-item .page-link {
+            border-radius: 1px; 
+            color:#33ccff;
+        }
+
+        .change-btn {
+            position: absolute;
+            bottom: -1.8rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #33ccff;
+            color: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        
+        .change-btn:hover {
+            background-color: #2cb5e8;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+            }
+            50% {
+                transform: translateY(100vh) translateX(50px);
+            }
+            100% {
+                transform: translateY(-100vh) translateX(-50px);
+            }
+        }
+        
+        .search-bar {
+            position: relative;
+            z-index: 2; /* Ensure the search bar is above the floating icons */
+            background-color: rgba(255, 255, 255, 0.9); /* Light background with slight transparency */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+    
+        .search-bar {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    
+        .search-bar input, .search-bar select {
+            margin-bottom: 1rem;
+        }
+    
+        .card {
+            border: none;
+            overflow: hidden;
+        }
+    
+        .card-img-top {
+            position: relative;
+        }
+    
+        .price-badge {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-top-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+            font-weight: bold;
+        }
+    
+        .property-details {
+            padding: 1rem;
+            background-color: #ffffff;
+        }
+    
+        .property-details h5 {
+            color: #33ccff;
+            margin-bottom: 1rem;
+        }
+    
+        .property-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+    
+        .property-features .feature {
+            display: flex;
+            align-items: center;
+        }
+    
+        .property-features .feature i {
+            margin-right: 0.5rem;
+            color: #33ccff;
+        }
+    
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            height: 60px;
+            border-radius: 20px 20px 0 0;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1030;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+        }
+    
+        .bottom-nav .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            color: #33ccff !important; /* Ensure text color is blue */
+            text-decoration: none;
+            text-align: center;
+        }
+    
+        .bottom-nav .nav-link i {
+            margin-bottom: 0.2rem;
+            color: #33ccff !important; /* Ensure icon color is blue */
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 2rem 0;
+            font-family: 'Montserrat', sans-serif;
+            border-top: 1px solid #e5e5e5;
+        }
+        
+        .footer h5 {
+            color: #33ccff;
+            font-weight: bold;
+        }
+        
+        .footer p {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .footer a {
+            color: #33ccff;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer .social-links {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .footer .social-icon {
+            font-size: 1.2rem;
+            color: #33ccff;
+            transition: color 0.3s;
+        }
+        
+        .footer .social-icon:hover {
+            color: #2cb5e8;
+        }
+        
+        .footer .container {
+            max-width: 960px;
+        }
+        
+        .footer .text-center p {
+            color: #777;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+        .position-relative {
+            position: relative;
+        }
+        
+        @media (max-width: 768px) {
+           
+            .btn-logout, .btn-signup {
+                margin-left: 0px;
+                margin-top: 10px;
+            }
+        }
+
+    </style>
+    
+    
+</head>
+<body>
+    <div class="container mt-4">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">RENTLY</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('home')}}">Home</a>
+                    </li>
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="#">Dashboard</a>
+                    </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('about')}}">About</a>
+                    </li>
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li> -->
+                    {%  if logged_in %}
+                        {% if data['profile_pic'] == "null" %}
+                        <li class="nav-item">
+                            <a href="#">
+                                <!-- Use Gravatar image instead of static image -->
+                                <img src="{{ data['email'] | gravatar }}" alt="Profile" class="profile-pic" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
+                            </a>
+                        </li>
+                        
+                        {% else %}
+                            <li class="nav-item">
+                                <a href="#"><img src="{{data['img_path']}}{{data['profile_pic']}}" alt="Profile" class="profile-pic" data-bs-toggle="modal" data-bs-target="#userDetailsModal"></a>
+                            </li>
+                        {% endif %}
+                    <li class="nav-item">
+                        <a href="{{url_for('logout')}}" class="btn btn-logout">Logout</a>
+                    </li> 
+                    {% else %}
+                    <li class="nav-item">
+                        <button class="btn btn-login" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+                    </li>
+                    <li class="nav-item">
+                        <a  href="{{url_for('signup')}}" class="btn btn-signup">Sign Up</a>
+                    </li>
+                   
+                    {% endif %}
+                   
+                </ul>
+                
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero position-relative">
+        <div class="floating-icons">
+            <i class="fas fa-home"></i>
+            <i class="fas fa-building"></i>
+            <i class="fas fa-warehouse"></i>
+            <i class="fas fa-hotel"></i>
+            <i class="fas fa-church"></i>
+            <i class="fas fa-landmark"></i>
+            <i class="fas fa-home"></i>
+            <i class="fas fa-building"></i>
+            <i class="fas fa-warehouse"></i>
+            <i class="fas fa-hotel"></i>
+        </div>
+         <!-- Floating icons container -->
+        <div class="container position-relative">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="search-bar">
+                        <h3 class="text-center mb-4" style="color: #33ccff;">Find Your New Home</h3>
+                        <form action="search" method="post">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <select class="form-control" id="state" name="state">
+                                        <option value="" disabled selected>Select State</option>
+                                        <option value="Abia">Abia</option>
+                                        <option value="Adamawa">Adamawa</option>
+                                        <option value="Akwa Ibom">Akwa Ibom</option>
+                                        <option value="Anambra">Anambra</option>
+                                        <option value="Bauchi">Bauchi</option>
+                                        <option value="Bayelsa">Bayelsa</option>
+                                        <option value="Benue">Benue</option>
+                                        <option value="Borno">Borno</option>
+                                        <option value="Cross River">Cross River</option>
+                                        <option value="Delta">Delta</option>
+                                        <option value="Ebonyi">Ebonyi</option>
+                                        <option value="Edo">Edo</option>
+                                        <option value="Ekiti">Ekiti</option>
+                                        <option value="Enugu">Enugu</option>
+                                        <option value="FCT">Federal Capital Territory</option>
+                                        <option value="Gombe">Gombe</option>
+                                        <option value="Imo">Imo</option>
+                                        <option value="Jigawa">Jigawa</option>
+                                        <option value="Kaduna">Kaduna</option>
+                                        <option value="Kano">Kano</option>
+                                        <option value="Katsina">Katsina</option>
+                                        <option value="Kebbi">Kebbi</option>
+                                        <option value="Kogi">Kogi</option>
+                                        <option value="Kwara">Kwara</option>
+                                        <option value="Lagos">Lagos</option>
+                                        <option value="Nasarawa">Nasarawa</option>
+                                        <option value="Niger">Niger</option>
+                                        <option value="Ogun">Ogun</option>
+                                        <option value="Ondo">Ondo</option>
+                                        <option value="Osun">Osun</option>
+                                        <option value="Oyo">Oyo</option>
+                                        <option value="Plateau">Plateau</option>
+                                        <option value="Rivers">Rivers</option>
+                                        <option value="Sokoto">Sokoto</option>
+                                        <option value="Taraba">Taraba</option>
+                                        <option value="Yobe">Yobe</option>
+                                        <option value="Zamfara">Zamfara</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <input type="text" class="form-control" placeholder="City" name="city">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <input type="number" class="form-control"  name="bedrooms" placeholder="Number of Bedrooms" min="1">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <input type="number" class="form-control"  name="bathrooms" placeholder="Number of Bathrooms" min="1">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <input type="text" class="form-control" name="price" placeholder="Price Range (e.g. ₦50000 - ₦150000)">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <select class="form-control" name="status" id="property-status">
+                                        <option value="available" selected>Available</option>
+                                        <option value="rented">Rented</option>
+                                        <option value="pending">Pending</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 text-center mt-3">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
+                            </div>
+                        </form>       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container my-5">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% if properties == None %}
+            <p class="text-center fw-bold">No Listings Available Yet</p>
+            {% else %}
+            {% for property in properties['items'] %}
+                <div class="col">
+                    <div class="card">
+                        <div class="card-img-top position-relative">
+                            <a href="{{url_for('property', id=property.id)}}">
+                                <img src="{{properties['property_imgs']}}{{ property.file_1 }}" alt="Property Image" class="w-100">
+                                <span class="price-badge price">₦{{property.price}}/yr</span>
+                                <!-- <i class="heart-icon fas fa-heart"></i> Heart Icon -->
+                            </a>
+                        </div>
+                        <div class="property-details">
+                            <h5>{{ property.address }}, {{ property.city }}, {{ property.state }}</h5>
+                            <div class="property-features">
+                                <div class="feature">
+                                    <i class="fas fa-bed"></i> {{property.bedrooms}} Bedrooms
+                                </div>
+                                <div class="feature">
+                                    <i class="fas fa-bath"></i> {{property.bathrooms}} Bathrooms
+                                </div>
+                                <div class="feature">
+                                    <i class="fas fa-tag"></i> {{property.status}}
+                                </div>
+                                <div class="feature">
+                                    <i class="fas fa-clock"></i> {{property.created_at}} 
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+             
+            {% endif %}
+                </div>
+            </div>
+            <!-- Repeat for other properties -->
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+               {% include "./partials/_login_modal.html" %}
+            </div>
+        </div>
+    </div>
+
+
+    <!---- Profile Modal ----->
+    {% if logged_in %}
+    <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form action="change_profile_pic" method="post" enctype="multipart/form-data">
+                        <div class="d-flex justify-content-center mb-4">
+                            <div class="profile-pic-container">
+                                <input type="file" id="profilePicInput" name="profile_pic" class="profile-pic-input" accept="image/*">
+                                <label for="profilePicInput" class="profile-pic-label">
+                                    {% if data.profile_pic == "null" %}
+                                    <img id="profilePic" src="{{ data.email | gravatar }}" alt="Profile Picture" class="profile-pic2">
+                                    {% else %}
+    
+                                    <img id="profilePic" src="{{data['img_path']}}{{data['profile_pic']}}" alt="Profile Picture" class="profile-pic2">
+                                    {% endif %}
+                                    <div class="profile-pic-overlay">
+                                        <i class="fas fa-camera"></i>
+                                        <span>Change</span>
+                                    </div>
+                                </label>
+                                <button type="submit" class="change-btn">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" value="{{data['first_name']}}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" value="{{data['last_name']}}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" value="{{data['email']}}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone_no" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="phone_no" value="{{data['phone_number']}}" disabled>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="isTenant" {% if data["landlord"] %} checked {% else %} unchecked {% endif %} disabled>
+                        <label class="form-check-label" for="isTenant">Landlord</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" value="********" disabled>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="{{ url_for('edit_user_info') }}" class="btn btn-primary">Edit Details</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {%  else %}
+    <div></div>
+    {% endif %}
+
+    
+    {%  if logged_in %}
+    <div class="bottom-nav">
+        <a class="nav-link" href="{{url_for('home')}}">
+            <i class="fas fa-home"></i>
+            Home
+        </a>
+        <a class="nav-link" href="{{url_for('dashboard')}}">
+            <i class="fas fa-chart-line"> </i>
+            Dashboard
+        </a>
+        <a class="nav-link" href="{{url_for('search')}}">
+            <i class="fas fa-search"></i>
+            Search
+        </a>
+        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#userDetailsModal">
+            <i class="fas fa-user"></i>
+            Profile
+        </a>
+    </div>
+    {% endif %}
+</div>
+    
+{% if properties != None %}
+    <div class="pagination_container">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page - 1 }}&size={{ size }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for p in range(1, total_pages + 1) %}
+                    {% if p == page %}
+                        <li class="page-item active">
+                            <a class="page-link">{{ p }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ p }}&size={{ size }}">{{ p }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page + 1 }}&size={{ size }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        </div>
+{% endif %}
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+{% include "./partials/_footer.html" %}
+
+
+<script>
+
+        // JavaScript code to handle profile picture upload
+        const profilePicInput = document.getElementById('profilePicInput');
+        const profilePic = document.getElementById('profilePic');
+
+        profilePicInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const objectUrl = URL.createObjectURL(file);
+                profilePic.src = objectUrl;
+            }
+        });
+
+        document.querySelector('.toggle-password').addEventListener('click', function (e) {
+            const passwordInput = document.getElementById('password');
+            const icon = e.target;
+            // Toggle the type attribute of the password input
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle the icon class
+            icon.classList.toggle('fa-eye-slash');
+            icon.classList.toggle('fa-eye');
+        });
+
+        
+    
+</script>
+
+
+</html>

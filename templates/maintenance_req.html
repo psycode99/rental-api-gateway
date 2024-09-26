@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance Request | {{ data.first_name }} - {{ data.address }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <style>
+
+        :root {
+            --background-color: #f4f6f8;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --pending-color: #f39c12;
+            --in-progress-color: #3498db;
+            --completed-color: #2ecc71;
+        }
+
+        body, .navbar-brand, .nav-link, .btn-logout, .hero, .search-bar, .card, .property-details, .property-features .feature, .bottom-nav .nav-link {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .navbar {
+            background-color: #33ccff;
+            border-radius: 25px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+        }
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: white !important;
+        }
+
+        .btn-logout{
+            background-color: white;
+            color: #2cb5e8;
+            border-radius: 25px;
+            padding: 0.5rem 1rem;
+        }
+    
+        .btn-logout:hover {
+            color: white;
+            border-color: white;
+        }
+
+        .btn-login{
+            background-color: white;
+            color: #2cb5e8;
+            margin-right: 1rem;
+            border-radius: 25px;
+            padding: 0.5rem 1rem;
+        }
+    
+        .btn-login:hover {
+            color: white;
+            border-color: white;
+        }
+
+        .btn-signup {
+            border-radius: 25px;
+            color: white;
+            border-color: white;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-signup:hover {
+            background-color: white;
+            color: #33ccff;
+        }
+
+        .btn-primary {
+            background-color: #33ccff;
+            border-color: #33ccff;
+        }
+
+        .btn-primary:hover {
+            background-color: #2cb5e8;
+            border-color: #2cb5e8;
+        }
+
+        .nav-link {
+            color: white !important;
+        }
+
+
+        
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-left: 1rem;
+            margin-right: 1rem;
+        }
+    
+        .hero {
+            background-color: #f5f5f5;
+            padding: 4rem 0;
+        }
+        .hero {
+            background-color: #f0f0f0; /* Light grey background */
+            padding: 50px 0; /* Adjust padding as needed */
+            overflow: hidden; /* Ensure floating icons stay within the hero */
+            position: relative;
+        }
+        
+        
+        .footer {
+            background-color: #f8f9fa;
+            padding: 2rem 0;
+            font-family: 'Montserrat', sans-serif;
+            border-top: 1px solid #e5e5e5;
+        }
+        
+        .footer h5 {
+            color: #33ccff;
+            font-weight: bold;
+        }
+        
+        .footer p {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .footer a {
+            color: #33ccff;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer .social-links {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .footer .social-icon {
+            font-size: 1.2rem;
+            color: #33ccff;
+            transition: color 0.3s;
+        }
+        
+        .footer .social-icon:hover {
+            color: #2cb5e8;
+        }
+        
+        .footer .container {
+            max-width: 960px;
+        }
+        
+        .footer .text-center p {
+            color: #777;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+        .position-relative {
+            position: relative;
+        }
+        
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            margin-top: 5rem;
+            margin-bottom: 5rem;
+        }
+
+        .icon-placeholder {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 36px;
+        }
+
+        .booking-info {
+            margin-top: 30px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #33ccff;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .notes {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .notes-label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+        }
+
+        .notes-value {
+            font-size: 1rem;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+        .status-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .status-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 20px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .status-btn:hover {
+            opacity: 0.8;
+        }
+
+        .pending {
+            background-color: var(--pending-color);
+        }
+
+        .in-progress {
+            background-color: var(--in-progress-color);
+        }
+
+        .completed {
+            background-color: var(--completed-color);
+        }
+        
+        
+        @media (max-width: 768px) {
+           
+            .btn-logout, .btn-signup {
+                margin-left: 0px;
+                margin-top: 10px;
+            }
+            .profile-pic{
+                margin-left: 0;
+            }
+        }
+
+    </style>
+    
+    
+</head>
+<body>
+    <div class="container mt-4">
+        {% include "./partials/_item_navbar.html" %}
+
+    
+
+    </div>
+    <center>
+        <div class="card">
+            <div class="icon-placeholder">
+                🔧
+            </div>
+            <div class="request-info">
+                <div class="info-item">
+                    <div class="info-label">Tenant Name</div>
+                    <div class="info-value">{{data.first_name}} {{data.last_name}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Property Name</div>
+                    <div class="info-value">{{data.address}}, {{data.city}}, {{data.state}}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Request Date</div>
+                    <div class="info-value">{{data.request_date}}</div>
+                </div>
+                <div class="description">
+                    <div class="description-label">Description</div>
+                    <div class="description-value">{{data.description}}</div>
+                </div>
+            </div>
+            <div class="status-buttons">
+                <button class="status-btn pending">Pending</button>
+                <button class="status-btn in-progress">In Progress</button>
+                <button class="status-btn completed">Completed</button>
+            </div>
+        </div>
+</center>
+
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+{% include "./partials/_footer.html" %}
+
+
+
+</html>

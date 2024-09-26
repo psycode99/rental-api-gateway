@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rently | Sign Up</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <style>
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+
+        .btn-login {
+            background-color: white;
+            color: #33ccff;
+        }
+
+        .btn-login:hover {
+            color: white;
+            border-color: white;
+        }
+
+        .btn-primary{
+            background-color: #33ccff;
+            border: none;
+        }
+
+        .btn-primary:hover{
+            background-color: white;
+            color: #33ccff;
+            border: 1px solid #33ccff;
+        }
+        
+        .card {
+            border-radius: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: #33ccff;
+            box-shadow: 0 0 0 0.2rem rgba(51, 204, 255, 0.25);
+        }
+
+        .btn-signup {
+            background-color: #33ccff;
+            border-color: #33ccff;
+        }
+
+        .btn-signup:hover {
+            background-color: white;
+            color: #33ccff;
+            border: 1px solid #33ccff;
+        }
+
+        .nav-link {
+            color: white !important;
+        }
+
+        .center-form-container {
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+   
+  {% include "./partials/_sl_navbar.html" %}
+
+    <div class="container center-form-container d-flex align-items-center justify-content-center">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-6 col-lg-5">
+                {% with messages = get_flashed_messages(with_categories=True) %}
+                {% if messages %}
+                    <div class="flash-messages-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'error' else 'info' }} alert-dismissible fade show" role="alert">
+                                <strong>{{ message }}</strong>
+                                
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% endwith %}
+                <div class="card shadow">
+                    <div class="card-body p-5">
+                        <h2 class="text-center mb-4" style="color: #33ccff;">SIGN UP</h2>
+                        <form action="signup", method="post">
+                            <div class="mb-3">
+                                <label for="firstname" class="form-label" style="color: #33ccff;">First Name</label>
+                                <input type="text" class="form-control" id="firstname" name="firstname" placeholder="First Name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="lastname" class="form-label" style="color: #33ccff;">Last Name</label>
+                                <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Last Name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label" style="color: #33ccff;">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label" style="color: #33ccff;">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone Number" required>
+                            </div>
+                            <div class="mb-3 position-relative">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" id="password" name="password" class="form-control" required>
+                                <i class="far fa-eye-slash toggle-password" style="cursor: pointer; position: absolute; right: 10px; top: 36px;"></i>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="landlord" name="landlord">
+                                <label class="form-check-label" for="landlord">I am a landlord</label>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-signup">Sign Up</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+     <!-- Login Modal -->
+<!-- <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+           {% include "./partials/_login_modal.html" %}
+        </div>
+    </div>
+</div> -->
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+<script>
+    document.querySelector('.toggle-password').addEventListener('click', function (e) {
+        const passwordInput = document.getElementById('password');
+        const icon = e.target;
+        // Toggle the type attribute of the password input
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Toggle the icon class
+        icon.classList.toggle('fa-eye-slash');
+        icon.classList.toggle('fa-eye');
+    });
+
+    document.querySelector('.toggle-passwordl').addEventListener('click', function (e) {
+        const passwordInput = document.getElementById('passwordl');
+        const icon = e.target;
+        // Toggle the type attribute of the password input
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Toggle the icon class
+        icon.classList.toggle('fa-eye-slash');
+        icon.classList.toggle('fa-eye');
+    });
+</script>
+</html>

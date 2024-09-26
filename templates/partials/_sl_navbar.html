@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #33ccff;">
+    <div class="container">
+        <a class="navbar-brand" href="#">RENTLY</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{url_for('home')}}">Home</a>
+                </li>
+                {%  if '/about' not in request.path %}
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{{url_for('about')}}">About</a>
+                </li>
+                {% endif %}
+                <!-- <li class="nav-item">
+                    <a class="nav-link text-white" href="#">Contact</a>
+                </li> -->
+                {% if  '/login' in request.path %}
+                <li class="nav-item ms-2">
+                    <a href="{{url_for('signup')}}" class="btn btn-signup">Signup</a>
+                </li>
+                {%  elif '/signup' in request.path %}
+                <li class="nav-item ms-2"></li>
+                    <a href="{{url_for('login')}}" class="btn btn-login">Login</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
