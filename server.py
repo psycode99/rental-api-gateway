@@ -8,6 +8,7 @@ import humanize
 from datetime import datetime, timezone, timedelta
 import pytz
 from config import host, profile_pic_dir, property_uploads_dir, tenant_applications_dir, SECRET_KEY, flask_secret_key
+from utils import format_date, format_time, humanize_res, humanize_res_single, process_response, render_search, token_required, verify_token
 
 app = Flask(__name__)
 app.secret_key = flask_secret_key
@@ -22,102 +23,12 @@ gravatar = Gravatar(app,
                     base_url=None)
 
 
-def humanize_res(data):
-    for prop in data['items']:
-        price = prop['price']
-        bathrooms = prop['bathrooms']
-        if price.is_integer():
-            price = int(price)
-        
-        if bathrooms.is_integer():
-            bathrooms = int(bathrooms)
-
-        humanized_price = humanize.intcomma(price)
-        prop['bathrooms'] = bathrooms
-        prop['price'] = humanized_price
-        timestamp_str = prop['created_at']
-
-        # Parse the string with strptime to handle the Z at the end
-        parsed_date = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ')
-
-        # Localize to a specific timezone (Africa/Lagos)
-        # First, convert parsed_date to UTC and then to Africa/Lagos timezone
-        utc_zone = pytz.timezone("UTC")
-        lagos_zone = pytz.timezone("Africa/Lagos")
-
-        parsed_date = utc_zone.localize(parsed_date)  # localize to UTC
-        timestamp = parsed_date.astimezone(lagos_zone)  # convert to Lagos time
-
-        # Alternatively, you can use humanize to make it more natural, like "2 days ago"
-        humanized_time = humanize.naturaltime(timestamp)
-        prop['created_at'] = humanized_time
-
-    return data
-
-
-def humanize_res_single(data):
-
-    price = data['price']
-    bathrooms = data['bathrooms']
-    if price.is_integer():
-        price = int(price)
-    
-    if bathrooms.is_integer():
-        bathrooms = int(bathrooms)
-
-    humanized_price = humanize.intcomma(price)
-    data['bathrooms'] = bathrooms
-    data['price'] = humanized_price
-    # Assume data contains a 'timestamp' field in string format
-    timestamp_str = data['created_at']
-
-    # Parse the string with strptime to handle the Z at the end
-    parsed_date = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ')
-
-    # Localize to a specific timezone (Africa/Lagos)
-    # First, convert parsed_date to UTC and then to Africa/Lagos timezone
-    utc_zone = pytz.timezone("UTC")
-    lagos_zone = pytz.timezone("Africa/Lagos")
-
-    parsed_date = utc_zone.localize(parsed_date)  # localize to UTC
-    timestamp = parsed_date.astimezone(lagos_zone)  # convert to Lagos time
-
-    # Alternatively, you can use humanize to make it more natural, like "2 days ago"
-    humanized_time = humanize.naturaltime(timestamp)
-    data['created_at'] = humanized_time
-
-    return data
-
-
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.cookies.get('access_token')
-        if not token:
-            return redirect(url_for('login'))
-        
-        try:
-            # Decode the token to verify its validity
-            jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        except jwt.ExpiredSignatureError:
-            return redirect(url_for('login'))  # Token expired, redirect to login
-        except jwt.InvalidTokenError:
-            return jsonify({"message": "Invalid token"}), 401
-        
-        return f(*args, **kwargs)
-    
-    return decorated
-
-
-def verify_token(token):
-    try:
-        # Decode the JWT token (use your secret key here)
-        decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        return decoded
-    except jwt.ExpiredSignatureError:
-        return None
-    except jwt.InvalidTokenError:
-        return None
+# Custom error handler for 500 Internal Server Error
+@app.errorhandler(500)
+def internal_server_error(e):
+    # Log the error if necessary
+    # For example: app.logger.error(f'Server Error: {e}, Route: {request.url}')
+    return render_template('500.html'), 500
 
 
 @app.route('/', methods=['POST','GET'])
@@ -319,7 +230,6 @@ def profile_pic():
                         signup_data['profile_pic'] = filename
                         del signup_data['password']
                         update_res = requests.put(f"{host}/v1/users/{user_id}", headers=headers, json=signup_data )
-                        print(update_res.json())
                         if update_res.status_code == 200:
                             # session['profile_pic'] = f"{profile_pic_dir}{filename}"
                             session['profile_pic'] = f"{filename}"
@@ -468,17 +378,15 @@ def property():
 @app.route('/search', methods=['POST', 'GET'])
 def search():
     token = request.cookies.get('access_token')
-    page = request.args.get('page')
-    size = request.args.get('size')
+    page = request.args.get('page', 1)  # Default to page 1
+    size = request.args.get('size', 6)  # Default to 6 results per page
 
+    # Load total and pagination data from session
     total = session.get('total', 0)
     total_pages = session.get('pages', 0)
 
-    if page == None or size == None:
-        page = 1
-        size = 1
-       
     if request.method == "POST":
+        # Fetching search parameters from the form
         state = request.form.get('state')
         city = request.form.get('city')
         bedrooms = request.form.get('bedrooms')
@@ -486,6 +394,7 @@ def search():
         price = request.form.get("price")
         status = request.form.get("status")
 
+        # Filter out empty parameters to avoid sending unnecessary null values
         search_params = {
             "state": state if state else None,
             "city": city if city else None,
@@ -495,216 +404,106 @@ def search():
             "status": status
         }
 
-        res = requests.post(f"{host}/v1/properties/search?page={page}&size=1", params=search_params)
-        if res.status_code == 200:
-            session['state'] = state if state else None
-            session['city'] = city if city else None
-            session['bedrooms'] = int(bedrooms) if bedrooms else None
-            session['bathrooms'] = float(bathrooms) if bathrooms else None
-            session['price'] = float(price) if price else None
-            session['status'] = status
+        # Store in session to persist between requests
+        session.update({
+            'state': state if state else None,
+            'city': city if city else None,
+            'bedrooms': int(bedrooms) if bedrooms else None,
+            'bathrooms': float(bathrooms) if bathrooms else None,
+            'price': float(price) if price else None,
+            'status': status
+        })
 
-            data = res.json()
-            data['property_imgs'] = property_uploads_dir
-            for prop in data['items']:
-                price = prop['price']
-                bathrooms = prop['bathrooms']
-                if price.is_integer():
-                    price = int(price)
-                
-                if bathrooms.is_integer():
-                    bathrooms = int(bathrooms)
-
-                humanized_price = humanize.intcomma(price)
-                prop['bathrooms'] = bathrooms
-                prop['price'] = humanized_price
-                # Assume data contains a 'timestamp' field in string format
-                timestamp_str = prop['created_at']
-                
-                # Convert the string to a datetime object
-                timestamp = datetime.fromisoformat(timestamp_str)
-                
-                # Optionally localize to a specific timezone if needed
-                timestamp = timestamp.astimezone(pytz.timezone("Africa/Lagos"))
-
-                # # Format the datetime as needed, e.g., 'Sep 2, 2024, 5:08 AM'
-                # formatted_time = timestamp.strftime('%b %d, %Y, %I:%M %p')
-                
-                # Alternatively, you can use humanize to make it more natural, like "2 days ago"
-                humanized_time = humanize.naturaltime(timestamp)
-                prop['created_at'] = humanized_time
-
-                total = data['total']
-                current_page = data['page']
-                size = data['size']
-                total_pages = data['pages']
-
-                session['total'] = total
-                session['page'] = current_page
-                session['size'] = size
-                session['pages'] = total_pages
-
-            if token and verify_token(token):
-                logged_in = True
-                profile_picture = f"{session['profile_pic_path']}{session['profile_pic']}"
-                data['first_name'] = session.get('first_name', None)
-                data['last_name'] = session.get("last_name", None)
-                data['email'] = session.get("email", None)
-                data['landlord'] = session.get("landlord", None)
-                data['phone_number'] = session.get("phone_number", None)
-                
-                return render_template(
-                                    'search.html',
-                                    data=data,
-                                    logged_in=logged_in,
-                                    profile_picture=profile_picture,
-                                    total=total,
-                                    page=current_page,
-                                    size=size,
-                                    total_pages=total_pages)
-            else:
-                logged_in = False
-                return render_template(
-                                    'search.html',
-                                    data=data,
-                                    logged_in=logged_in,
-                                    total=total,
-                                    page=current_page,
-                                    size=size,
-                                    total_pages=total_pages)
-        else:
-            if token and verify_token(token):
-                logged_in = True
-                data = {}
-                data['items'] = None
-                profile_picture = f"{session['profile_pic_path']}{session['profile_pic']}"
-                data['first_name'] = session.get('first_name', None)
-                data['last_name'] = session.get("last_name", None)
-                data['email'] = session.get("email", None)
-                data['landlord'] = session.get("landlord", None)
-                data['phone_number'] = session.get("phone_number", None)
-                
-                return render_template(
-                                    'search.html',
-                                    data=data,
-                                    logged_in=logged_in,
-                                    profile_picture=profile_picture,
-                                    total=0,
-                                    page=0,
-                                    size=0,
-                                    total_pages=0)
-            else:
-                logged_in = False
-                data = {}
-                data['items'] = None
-                return render_template(
-                                    'search.html',
-                                    data=data,
-                                    logged_in=logged_in,
-                                    total=0,
-                                    page=0,
-                                    size=0,
-                                    total_pages=0)
-            
-    if token and verify_token(token):
-        logged_in = True
-
-        state = session.get('state')
-        city = session.get('city')
-        bedrooms = session.get('bedrooms')
-        bathrooms = session.get('bathrooms')
-        price = session.get('price')
-        status = session.get('status')
-        # Store these variables in a dictionary or JSON object
-        search_params = {
-            "state": state,
-            "city": city,
-            "bedrooms": bedrooms,
-            "bathrooms": bathrooms,
-            "price": price,
-            "status": status
-        }
-        res = requests.post(f"{host}/v1/properties/search?page={page}&size=6", params=search_params)
-        if res.status_code != 204:
-            data = res.json()
-            data = data if data else None
-            data['property_imgs'] = property_uploads_dir
-            data = humanize_res(data=data)
-            data = data if data else None
-            data['first_name'] = session.get('first_name', None)
-            data['last_name'] = session.get("last_name", None)
-            data['email'] = session.get("email", None)
-            data['landlord'] = session.get("landlord", None)
-            data['phone_number'] = session.get("phone_number", None)
-            profile_picture = f"{session['profile_pic_path']}{session['profile_pic']}"
-            return render_template('search.html',
-                                    data=data,
-                                    total=total,
-                                    page=int(page),
-                                    size=size,
-                                    total_pages=total_pages,
-                                    logged_in=logged_in,
-                                    profile_picture=profile_picture)
-        else:
-            data = {}
-            data['items'] = None
-            data['first_name'] = session.get('first_name', None)
-            data['last_name'] = session.get("last_name", None)
-            data['email'] = session.get("email", None)
-            data['landlord'] = session.get("landlord", None)
-            data['phone_number'] = session.get("phone_number", None)
-            profile_picture = f"{session['profile_pic_path']}{session['profile_pic']}"
-            return render_template('search.html',
-                                    data=data,
-                                    total=total,
-                                    page=int(page),
-                                    size=size,
-                                    total_pages=total_pages,
-                                    logged_in=logged_in,
-                                    profile_picture=profile_picture)
     else:
-        logged_in = False
-
-        state = session.get('state')
-        city = session.get('city')
-        bedrooms = session.get('bedrooms')
-        bathrooms = session.get('bathrooms')
-        price = session.get('price')
-        status = session.get('status')
-
-        # Store these variables in a dictionary or JSON object
+        # Fetch search parameters from session if no POST data is present
         search_params = {
-            "state": state,
-            "city": city,
-            "bedrooms": bedrooms,
-            "bathrooms": bathrooms,
-            "price": price,
-            "status": status
+            "state": session.get('state'),
+            "city": session.get('city'),
+            "bedrooms": session.get('bedrooms'),
+            "bathrooms": session.get('bathrooms'),
+            "price": session.get('price'),
+            "status": session.get('status')
         }
-        res = requests.post(f"{host}/v1/properties/search?page={page}&size=6", params=search_params)
-        if res.status_code != 204:
-            data = res.json()
-            data = data if data else None
-            data['property_imgs'] = property_uploads_dir
-            data = humanize_res(data=data)
-            return render_template('search.html',
-                                    data=data,
-                                    total=total,
-                                    page=int(page),
-                                    size=size,
-                                    total_pages=total_pages,
-                                    logged_in=logged_in)
+
+    # API call to search properties
+    res = requests.post(f"{host}/v1/properties/search?page={page}&size=6", params=search_params)
+
+    if res.status_code == 200:
+        data = res.json()
+        # Process and humanize the response data
+        data = process_response(data)
+        total = data['total']
+        current_page = data['page']
+        total_pages = data['pages']
+
+        # Store pagination info in session
+        session.update({
+            'total': total,
+            'page': current_page,
+            'size': size,
+            'pages': total_pages
+        })
+
+        # If logged in, render profile-specific data
+        if token and verify_token(token):
+            logged_in = True
+            data.update({
+                'first_name': session.get('first_name', None),
+                'last_name': session.get('last_name', None),
+                'email': session.get('email', None),
+                'landlord': session.get('landlord', None),
+                'phone_number': session.get('phone_number', None)
+            })
+            profile_picture = f"{session['profile_pic_path']}{session['profile_pic']}"
+            prf = session['profile_pic']
+            return render_template(
+                'search.html',
+                data=data,
+                logged_in=logged_in,
+                prf=prf,
+                profile_picture=profile_picture,
+                total=total,
+                page=current_page,
+                size=size,
+                total_pages=total_pages
+            )
         else:
-            data = {}
-            data['items'] = None
-            return render_template('search.html',
-                                    data=data,
-                                    total=total,
-                                    page=int(page),
-                                    size=size,
-                                    total_pages=total_pages,
-                                    logged_in=logged_in,
-                                    )
+            profile_picture = None
+            prf = None
+            return render_search(data, False, total, current_page, size, total_pages, prf=prf,
+                profile_picture=profile_picture)
+        
+    elif res.status_code == 204 and verify_token(token):
+        logged_in = True
+        data = {}
+        data.update({
+                'first_name': session.get('first_name', None),
+                'last_name': session.get('last_name', None),
+                'email': session.get('email', None),
+                'landlord': session.get('landlord', None),
+                'phone_number': session.get('phone_number', None),
+                "items": None
+            })
+        profile_picture = f"{session['profile_pic_path']}{session['profile_pic']}"
+        prf = session['profile_pic']
+        return render_template(
+                'search.html',
+                data=data,
+                logged_in=logged_in,
+                prf=prf,
+                profile_picture=profile_picture,
+                total=0,
+                page=0,
+                size=0,
+                total_pages=0
+            )
+
+    else:
+        profile_picture = None
+        prf = None
+        return render_search({}, token and verify_token(token), 0, 0, 0, 0,prf=prf,
+                profile_picture=profile_picture)
+
 
 
 @app.route('/dashboard', methods=["POST", "GET"])
@@ -755,7 +554,6 @@ def add_property_img():
             if response.status_code == 200:
                 filenames = {"files": response.json().get('filenames')}
                 session['img_files'] = filenames
-                print(filenames)
                 return redirect(url_for('add_property'))
             else:
                 return f"Failed to upload images: {response.status_code} - {response.text}"
@@ -1096,6 +894,8 @@ def view_bookings():
         data = res.json()
         data['bookings_length'] = len(data['items'])
         for booking in data['items']:
+            booking['viewing_date'] = format_date(booking['viewing_date'])
+            booking['viewing_time'] = format_time(booking['viewing_time'])
             prop_res = requests.get(f"{host}/v1/properties/{booking['property_id']}")
             if prop_res.status_code == 200:
                 booking['property_address'] = prop_res.json().get('address')
@@ -1156,6 +956,7 @@ def view_maintenance_reqs():
         size = data['size']
         total_pages = data['pages']
         for mr in data['items']:
+            mr['request_date'] = format_date(mr['request_date'])
             property_resp = requests.get(f"{host}/v1/properties/{mr['property_id']}")
             if property_resp.status_code == 200:
                 mr['address'] = property_resp.json().get('address')
@@ -1212,6 +1013,7 @@ def view_tenant_apps():
         total_pages = data['pages']
         data['applications_length'] = len(data['items'])
         for app in data['items']:
+            app['application_date'] = format_date(app['application_date'])
             prop_res = requests.get(f"{host}/v1/properties/{app['property_id']}")
             if prop_res.status_code == 200:
                 app['property_address'] = prop_res.json().get('address')
@@ -1254,6 +1056,8 @@ def booking():
     res = requests.get(f"{host}/v1/bookings/{property_id}/{booking_id}", headers=headers)
     if res.status_code == 200:
         data = res.json()
+        data['viewing_date'] = format_date(data['viewing_date'])
+        data['viewing_time'] = format_time(data['viewing_time'])
         prop_resp = requests.get(f"{host}/v1/properties/{data['property_id']}")
         if prop_resp.status_code == 200:
             data['address'] = prop_resp.json().get('address')
@@ -1290,6 +1094,7 @@ def maintenance_req():
         data = res.json()
         data['first_name'] = data['tenant']['first_name']
         data['last_name'] = data['tenant']['last_name']
+        data['request_date'] = format_date(data['request_date'])
         prop_resp = requests.get(f"{host}/v1/properties/{data['property_id']}")
         if prop_resp.status_code == 200:
             data['address'] = prop_resp.json().get('address')
@@ -1327,6 +1132,8 @@ def tenant_app():
         data = res.json()
         data['landlord'] = t_v['landlord']
         data['monthly_income'] = humanize.intcomma(data['monthly_income'])
+        data['application_date'] = format_date(data['application_date'])
+        data['desired_move_in_date'] = format_date(data['desired_move_in_date'])
         prop_resp = requests.get(f"{host}/v1/properties/{data['property_id']}")
         if prop_resp.status_code == 200:
             data['address'] = prop_resp.json().get('address')
@@ -1369,7 +1176,6 @@ def download_application(filename):
         )
 
     except Exception as e:
-        print(f"Error: {e}")
         abort(500)  # Internal Server Error if something goes wrong
 
 

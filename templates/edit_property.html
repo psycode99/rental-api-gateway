@@ -315,8 +315,8 @@
                 <label for="status" class="form-label">Status</label>
                 <select class="form-control" id="status" name="status" required>
                     <option value="available" {% if data.status == 'available' %}selected{% endif %}>Available</option>
-                    <option value="sold" {% if data.status == 'rented' %}selected{% endif %}>Rented</option>
-                    <option value="pending" {% if data.status == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="occupied" {% if data.status == 'occupied' %}selected{% endif %}>Rented</option>
+                    <option value="under maintenance" {% if data.status == 'under maintenance' %}selected{% endif %}>Under Maintenance</option>
                 </select>
             </div>
             <div class="text-center">
