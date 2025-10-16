@@ -646,7 +646,7 @@
                     <div class="card-img-top position-relative">
                         <a href="{{url_for('property', id=property.id)}}">
                             <div class="lazy-img-placeholder"></div> <!-- Shimmer effect placeholder -->
-                            <img data-src="{{data['property_imgs']}}{{ property.file_1 }}" alt="Property Image" class="lazy-img w-100">
+                            <img data-src="{{ property.file_1 }}" alt="Property Image" class="lazy-img w-100">
                             <span class="price-badge price">₦{{property.price}}/yr</span>
                             <!-- <i class="heart-icon fas fa-heart"></i> Heart Icon -->
                         </a>
@@ -745,7 +745,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Edit Details</button>
+                    <a href="{{ url_for('edit_user_info') }}" class="btn btn-primary">Edit Details</a>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>

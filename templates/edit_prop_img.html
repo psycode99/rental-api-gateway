@@ -84,7 +84,7 @@
                 <div class="upload-box" onclick="document.getElementById('upload1').click()">
                     <input type="file" id="upload1" name="image1" hidden accept="image/*" onchange="previewImage(this, 'preview1')">
                     <div id="preview1">
-                        <img src="{{ data['property_imgs'] }}{{ data.images.image_1 }}" alt="Server Image 1">
+                        <img src="{{ data.images.image_1 }}" alt="Server Image 1">
                     </div>
                 </div>
             </div>
@@ -92,7 +92,7 @@
                 <div class="upload-box" onclick="document.getElementById('upload2').click()">
                     <input type="file" id="upload2" name="image2" hidden accept="image/*" onchange="previewImage(this, 'preview2')" value="">
                     <div id="preview2">
-                        <img src="{{ data['property_imgs'] }}{{ data.images.image_2 }}" alt="Server Image 2">
+                        <img src="{{ data.images.image_2 }}" alt="Server Image 2">
                     </div>
                 </div>
             </div>
@@ -100,7 +100,7 @@
                 <div class="upload-box" onclick="document.getElementById('upload3').click()">
                     <input type="file" id="upload3" name="image3" hidden accept="image/*" onchange="previewImage(this, 'preview3')">
                     <div id="preview3">
-                        <img src="{{ data['property_imgs'] }}{{ data.images.image_3 }}" alt="Server Image 3">
+                        <img src="{{ data.images.image_3 }}" alt="Server Image 3">
                     </div>
                 </div>
             </div>

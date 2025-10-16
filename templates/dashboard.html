@@ -452,7 +452,7 @@
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a href="#"><img src="{{data['img_path']}}{{data['profile_pic']}}" alt="Profile" class="profile-pic" data-bs-toggle="modal" data-bs-target="#userDetailsModal"></a>
+                        <a href="#"><img src="{{data['profile_pic']}}" alt="Profile" class="profile-pic" data-bs-toggle="modal" data-bs-target="#userDetailsModal"></a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
@@ -585,7 +585,7 @@
                                     {% if data.profile_pic == "null" %}
                                     <img id="profilePic" src="{{ data.email | gravatar }}" alt="Profile Picture" class="profile-pic2">
                                     {% else %}
-                                    <img id="profilePic" src="{{data['img_path']}}{{data['profile_pic']}}" alt="Profile Picture" class="profile-pic2">
+                                    <img id="profilePic" src="{{data['profile_pic']}}" alt="Profile Picture" class="profile-pic2">
                                     {% endif %}
                                     <div class="profile-pic-overlay">
                                         <i class="fas fa-camera"></i>

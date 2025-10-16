@@ -529,7 +529,7 @@
                         
                         {% else %}
                             <li class="nav-item">
-                                <a href="#"><img src="{{data['img_path']}}{{data['profile_pic']}}" alt="Profile" class="profile-pic" data-bs-toggle="modal" data-bs-target="#userDetailsModal"></a>
+                                <a href="#"><img src="{{data['profile_pic']}}" alt="Profile" class="profile-pic" data-bs-toggle="modal" data-bs-target="#userDetailsModal"></a>
                             </li>
                         {% endif %}
                     <li class="nav-item">
@@ -655,7 +655,7 @@
                     <div class="card-img-top position-relative">
                         <a href="{{url_for('property', id=property.id)}}">
                             <div class="lazy-img-placeholder"></div> <!-- Shimmer effect placeholder -->
-                            <img data-src="{{properties['property_imgs']}}{{ property.file_1 }}" alt="Property Image" class="lazy-img w-100">
+                            <img data-src="{{ property.file_1 }}" alt="Property Image" class="lazy-img w-100">
                             <span class="price-badge price">₦{{property.price}}/yr</span>
                         </a>
                     </div>
@@ -718,7 +718,7 @@
                                     <img id="profilePic" src="{{ data.email | gravatar }}" alt="Profile Picture" class="profile-pic2">
                                     {% else %}
     
-                                    <img id="profilePic" src="{{data['img_path']}}{{data['profile_pic']}}" alt="Profile Picture" class="profile-pic2">
+                                    <img id="profilePic" src="{{data['profile_pic']}}" alt="Profile Picture" class="profile-pic2">
                                     {% endif %}
                                     <div class="profile-pic-overlay">
                                         <i class="fas fa-camera"></i>

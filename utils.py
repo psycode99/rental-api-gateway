@@ -1,10 +1,11 @@
 from datetime import datetime
 import humanize
-from config import property_uploads_dir, SECRET_KEY
+from config import  SECRET_KEY
 import pytz
 from flask import render_template, redirect, url_for, jsonify, request
 import jwt
 from functools import wraps
+from dateutil.parser import isoparse
 
 
 def format_date(date_str):
@@ -29,7 +30,6 @@ def format_time(time_str):
 
 def process_response(data):
     """ Helper function to process response data. """
-    data['property_imgs'] = property_uploads_dir
     for prop in data['items']:
         # Process price
         price = float(prop['price'])
@@ -47,9 +47,20 @@ def process_response(data):
 
 def humanize_time(timestamp_str):
     """ Convert ISO timestamp to human-readable format. """
-    parsed_date = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ')
-    parsed_date = pytz.UTC.localize(parsed_date).astimezone(pytz.timezone("Africa/Lagos"))
-    return humanize.naturaltime(parsed_date)
+   
+
+# Parse the string directly into a datetime (timezone-aware if it has Z or +01:00)
+    parsed_date = isoparse(timestamp_str)
+
+    # Convert to UTC first
+    utc_zone = pytz.timezone("UTC")
+    parsed_date = parsed_date.astimezone(utc_zone)
+
+    # Convert to Africa/Lagos timezone
+    lagos_zone = pytz.timezone("Africa/Lagos")
+    timestamp = parsed_date.astimezone(lagos_zone)
+    
+    return humanize.naturaltime(timestamp)
 
 
 def render_search(data, logged_in, total, current_page, size, total_pages, prf, profile_picture):
@@ -82,15 +93,15 @@ def humanize_res(data):
         prop['price'] = humanized_price
         timestamp_str = prop['created_at']
 
-        # Parse the string with strptime to handle the Z at the end
-        parsed_date = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+        # Parse the string directly into a datetime (timezone-aware if it has Z or +01:00)
+        parsed_date = isoparse(timestamp_str)
 
-        # Localize to a specific timezone (Africa/Lagos)
-        # First, convert parsed_date to UTC and then to Africa/Lagos timezone
+        # Convert to UTC first
         utc_zone = pytz.timezone("UTC")
-        lagos_zone = pytz.timezone("Africa/Lagos")
+        parsed_date = parsed_date.astimezone(utc_zone)
 
-        parsed_date = utc_zone.localize(parsed_date)  # localize to UTC
+        # Convert to Africa/Lagos timezone
+        lagos_zone = pytz.timezone("Africa/Lagos")
         timestamp = parsed_date.astimezone(lagos_zone)  # convert to Lagos time
 
         # Alternatively, you can use humanize to make it more natural, like "2 days ago"
@@ -116,17 +127,16 @@ def humanize_res_single(data):
     # Assume data contains a 'timestamp' field in string format
     timestamp_str = data['created_at']
 
-    # Parse the string with strptime to handle the Z at the end
-    parsed_date = datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+    # Parse the string directly into a datetime (timezone-aware if it has Z or +01:00)
+    parsed_date = isoparse(timestamp_str)
 
-    # Localize to a specific timezone (Africa/Lagos)
-    # First, convert parsed_date to UTC and then to Africa/Lagos timezone
+    # Convert to UTC first
     utc_zone = pytz.timezone("UTC")
+    parsed_date = parsed_date.astimezone(utc_zone)
+
+    # Convert to Africa/Lagos timezone
     lagos_zone = pytz.timezone("Africa/Lagos")
-
-    parsed_date = utc_zone.localize(parsed_date)  # localize to UTC
-    timestamp = parsed_date.astimezone(lagos_zone)  # convert to Lagos time
-
+    timestamp = parsed_date.astimezone(lagos_zone)
     # Alternatively, you can use humanize to make it more natural, like "2 days ago"
     humanized_time = humanize.naturaltime(timestamp)
     data['created_at'] = humanized_time
@@ -163,4 +173,5 @@ def verify_token(token):
         return None
     except jwt.InvalidTokenError:
         return None
+    
 

@@ -392,13 +392,13 @@
                 <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
-                            <img src="{{data.property_imgs}}{{data.file_1}}" alt="Property Image 1" data-bs-toggle="modal" data-bs-target="#imageModal1">
+                            <img src="{{data.file_1}}" alt="Property Image 1" data-bs-toggle="modal" data-bs-target="#imageModal1">
                         </div>
                         <div class="carousel-item">
-                            <img src="{{data.property_imgs}}{{data.file_2}}" alt="Property Image 2" data-bs-toggle="modal" data-bs-target="#imageModal2">
+                            <img src="{{data.file_2}}" alt="Property Image 2" data-bs-toggle="modal" data-bs-target="#imageModal2">
                         </div>
                         <div class="carousel-item">
-                            <img src="{{data.property_imgs}}{{data.file_3}}" alt="Property Image 3" data-bs-toggle="modal" data-bs-target="#imageModal3">
+                            <img src="{{data.file_3}}" alt="Property Image 3" data-bs-toggle="modal" data-bs-target="#imageModal3">
                         </div>
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
@@ -417,7 +417,7 @@
                     {% if landlord_data.profile_pic == "null" %}
                     <img src="{{ landlord_data.email | gravatar }}" alt="Landlord">
                     {% else %}
-                    <img src="{{data.img_path}}{{landlord_data.profile_pic}}" alt="Landlord">
+                    <img src="{{landlord_data.profile_pic}}" alt="Landlord">
                     {% endif %}
                     <h5>{{landlord_data['first_name']}} {{ landlord_data['last_name'] }}</h5>
                     <p>Contact: {{landlord_data['email']}}</p>
